@@ -38,7 +38,7 @@ st.header("Model Selection")
 model_choice = st.selectbox(
     "Choose Prediction Model",
     [
-        "Random Forest",
+        "Random Forest (recommended)",
         "Logistic Regression",
         "XGBoost",
         #"CatBoost"
