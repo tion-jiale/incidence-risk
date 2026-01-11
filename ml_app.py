@@ -35,19 +35,21 @@ based on demographic, socioeconomic, education, and crime indicators.
 # Model selection
 st.header("Model Selection")
 
-model_choice = st.selectbox(
+# Display → internal mapping
+model_display_to_key = {
+    "Random Forest (recommended)": "Random Forest",
+    "Logistic Regression": "Logistic Regression",
+    "XGBoost": "XGBoost"
+}
+
+selected_display = st.selectbox(
     "Choose Prediction Model",
-    [
-        "Random Forest (recommended)",
-        "Logistic Regression",
-        "XGBoost",
-        #"CatBoost"
-    ]
+    list(model_display_to_key.keys()),
+    help="Random Forest is recommended due to its stable and strong overall performance."
 )
 
-
-# User inputs
-st.header("Input Population Indicators")
+# Clean internal model name
+model_choice = model_display_to_key[selected_display]
 
 state = st.selectbox(
     "State",
