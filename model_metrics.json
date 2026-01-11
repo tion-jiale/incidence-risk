@@ -1,0 +1,23 @@
+{
+    "Random Forest": {
+        "Accuracy": 0.9855072463768116,
+        "Precision": 0.9904761904761905,
+        "Recall": 0.9814814814814815,
+        "F1-score": 0.9856452726017944,
+        "ROC-AUC": 0.9997198879551821
+    },
+    "Logistic Regression": {
+        "Accuracy": 0.855072463768116,
+        "Precision": 0.8620915032679738,
+        "Recall": 0.8572984749455337,
+        "F1-score": 0.8554302966067672,
+        "ROC-AUC": 0.9518749950122499
+    },
+    "XGBoost": {
+        "Accuracy": 1.0,
+        "Precision": 1.0,
+        "Recall": 1.0,
+        "F1-score": 1.0,
+        "ROC-AUC": 1.0
+    }
+}
