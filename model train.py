@@ -14,9 +14,7 @@ import json
 import xgboost as xgb
 from catboost import CatBoostClassifier
 
-# ------------------------------------------------
 # Load data
-# ------------------------------------------------
 csv_path = "final_data.csv"
 final_data = pd.read_csv(csv_path)
 
@@ -26,9 +24,7 @@ y = final_data["incidence_encoded"]
 # Adjust target variable to be 0-indexed for models like XGBoost
 y = y - 1
 
-# ------------------------------------------------
 # Train-test split
-# ------------------------------------------------
 X_train, X_test, y_train, y_test = train_test_split(
     X, y,
     test_size=0.2,
@@ -36,28 +32,20 @@ X_train, X_test, y_train, y_test = train_test_split(
     stratify=y
 )
 
-# ------------------------------------------------
 # SMOTE (train only)
-# ------------------------------------------------
 smote = SMOTE(random_state=42)
 X_train_sm, y_train_sm = smote.fit_resample(X_train, y_train)
 
-# ------------------------------------------------
 # Scaling (ONLY for Logistic Regression)
-# ------------------------------------------------
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train_sm)
 X_test_scaled = scaler.transform(X_test)
 
-# ------------------------------------------------
 # Logistic Regression
-# ------------------------------------------------
 lr = LogisticRegression(max_iter=1000)
 lr.fit(X_train_scaled, y_train_sm)
 
-# ------------------------------------------------
 # Random Forest (NO scaling)
-# ------------------------------------------------
 rf_model = RandomForestClassifier(
     n_estimators=300,
     min_samples_leaf=1,
@@ -66,9 +54,7 @@ rf_model = RandomForestClassifier(
 )
 rf_model.fit(X_train_sm, y_train_sm)
 
-# ------------------------------------------------
-# XGBoost (NO scaling)
-# ------------------------------------------------
+# XGBoost
 xgb_model = xgb.XGBClassifier(
     n_estimators=300,
     max_depth=6,
@@ -81,9 +67,7 @@ xgb_model = xgb.XGBClassifier(
 )
 xgb_model.fit(X_train_sm, y_train_sm)
 
-# ------------------------------------------------
-# CatBoost (NO scaling)
-# ------------------------------------------------
+# CatBoost
 cb_model = CatBoostClassifier(
     iterations=300,
     depth=6,
@@ -95,9 +79,7 @@ cb_model = CatBoostClassifier(
 cb_model.fit(X_train_sm, y_train_sm)
 
 
-# ------------------------------------------------
 # Model Evaluation (Test Set)
-# ------------------------------------------------
 metrics = {}
 
 # Random Forest
@@ -152,9 +134,8 @@ with open("model_metrics.json", "w") as f:
 
 print("✅ Evaluation metrics saved")
 
-# ------------------------------------------------
+
 # Save artifacts
-# ------------------------------------------------
 joblib.dump(lr, "logistic_regression_model.pkl")
 joblib.dump(rf_model, "rf_model.pkl")
 joblib.dump(xgb_model, "xgboost_model.pkl")
@@ -163,3 +144,4 @@ joblib.dump(scaler, "scaler.pkl")
 joblib.dump(X.columns.tolist(), "model_columns.pkl")
 
 print("✅ Models, scaler, and columns saved successfully")
+
