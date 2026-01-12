@@ -12,16 +12,19 @@ import json
 
 
 import xgboost as xgb
-#from catboost import CatBoostClassifier
+from catboost import CatBoostClassifier
 
 # ------------------------------------------------
 # Load data
 # ------------------------------------------------
-csv_path = os.path.join(os.path.dirname(__file__), "final_data.csv")
+csv_path = "final_data.csv"
 final_data = pd.read_csv(csv_path)
 
 X = final_data.drop(columns=["incidence_encoded", "incidence_quartile_custom"])
 y = final_data["incidence_encoded"]
+
+# Adjust target variable to be 0-indexed for models like XGBoost
+y = y - 1
 
 # ------------------------------------------------
 # Train-test split
@@ -81,15 +84,15 @@ xgb_model.fit(X_train_sm, y_train_sm)
 # ------------------------------------------------
 # CatBoost (NO scaling)
 # ------------------------------------------------
-#cb_model = CatBoostClassifier(
-    #iterations=300,
-    #depth=6,
-    #learning_rate=0.1,
-    #loss_function="MultiClass",
-    #verbose=False,
-    #random_seed=42
-#)
-#cb_model.fit(X_train_sm, y_train_sm)
+cb_model = CatBoostClassifier(
+    iterations=300,
+    depth=6,
+    learning_rate=0.1,
+    loss_function="MultiClass",
+    verbose=False,
+    random_seed=42
+)
+cb_model.fit(X_train_sm, y_train_sm)
 
 
 # ------------------------------------------------
@@ -135,15 +138,15 @@ metrics["XGBoost"] = {
 }
 
 # CatBoost
-#cb_pred = cb_model.predict(X_test)
-#cb_proba = cb_model.predict_proba(X_test)
+cb_pred = cb_model.predict(X_test)
+cb_proba = cb_model.predict_proba(X_test)
 
-#metrics["CatBoost"] = {
- #   "Precision": precision_score(y_test, cb_pred, average="macro"),
-  #  "Recall": recall_score(y_test, cb_pred, average="macro"),
-  #  "F1-score": f1_score(y_test, cb_pred, average="macro"),
-  #  "ROC-AUC": roc_auc_score(y_test, cb_proba, multi_class="ovr")
-#}
+metrics["CatBoost"] = {
+    "Precision": precision_score(y_test, cb_pred, average="macro"),
+    "Recall": recall_score(y_test, cb_pred, average="macro"),
+    "F1-score": f1_score(y_test, cb_pred, average="macro"),
+    "ROC-AUC": roc_auc_score(y_test, cb_proba, multi_class="ovr")
+}
 with open("model_metrics.json", "w") as f:
     json.dump(metrics, f, indent=4)
 
@@ -155,9 +158,8 @@ print("✅ Evaluation metrics saved")
 joblib.dump(lr, "logistic_regression_model.pkl")
 joblib.dump(rf_model, "rf_model.pkl")
 joblib.dump(xgb_model, "xgboost_model.pkl")
-# joblib.dump(cb_model, "catboost_model.pkl")
+joblib.dump(cb_model, "catboost_model.pkl")
 joblib.dump(scaler, "scaler.pkl")
 joblib.dump(X.columns.tolist(), "model_columns.pkl")
 
 print("✅ Models, scaler, and columns saved successfully")
-

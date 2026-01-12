@@ -19,5 +19,12 @@
         "Recall": 1.0,
         "F1-score": 1.0,
         "ROC-AUC": 1.0
+    },
+    "CatBoost": {
+        "Accuracy": 1.0,
+        "Precision": 0.9904761904761905,
+        "Recall": 0.9814814814814815,
+        "F1-score": 0.9856452726017944,
+        "ROC-AUC": 1.0
     }
 }

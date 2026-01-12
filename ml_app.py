@@ -4,11 +4,12 @@ import joblib
 import json
 
 
+
 # Load model artifacts
 rf_model = joblib.load("rf_model.pkl")
 lr_model = joblib.load("logistic_regression_model.pkl")
 xgb_model = joblib.load("xgboost_model.pkl")
-#cb_model = joblib.load("catboost_model.pkl")
+cb_model = joblib.load("catboost_model.pkl")
 
 scaler = joblib.load("scaler.pkl")  # ONLY for Logistic Regression
 model_columns = joblib.load("model_columns.pkl")
@@ -39,7 +40,8 @@ st.header("Model Selection")
 model_display_to_key = {
     "Random Forest (recommended)": "Random Forest",
     "Logistic Regression": "Logistic Regression",
-    "XGBoost": "XGBoost"
+    "XGBoost": "XGBoost",
+    "CatBoost": "CatBoost"
 }
 
 selected_display = st.selectbox(
@@ -91,26 +93,31 @@ input_data = input_data[model_columns]
 
 
 # Prediction
+# Prediction
 if st.button("Assess STD Risk"):
 
-    # Select proper input for model
     if model_choice == "Logistic Regression":
         input_for_model = scaler.transform(input_data)
         model = lr_model
+
     elif model_choice == "XGBoost":
         input_for_model = input_data
         model = xgb_model
-    #elif model_choice == "CatBoost":
-     #   input_for_model = input_data
-     #   model = cb_model
+
+    elif model_choice == "CatBoost":
+        input_for_model = input_data.values
+        model = cb_model
+
     else:  # Random Forest
         input_for_model = input_data
         model = rf_model
 
-    # Prediction & probability
-    prediction = model.predict(input_for_model)[0]
+    prediction = int(model.predict(input_for_model).item())
     probabilities = model.predict_proba(input_for_model)[0]
     confidence = probabilities[prediction]
+
+
+
 
     # Map risk levels
     risk_map = {0: " Low Risk", 1: " Moderate Risk", 2: " High Risk"}
@@ -141,4 +148,9 @@ if st.button("Assess STD Risk"):
     -  Moderate Risk: Requires monitoring
     -  High Risk: Priority for intervention and planning
     """)
+
+
+
+
+
 
