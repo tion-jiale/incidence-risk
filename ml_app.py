@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 from sklearn.metrics import roc_curve, auc
 
 
-# --------------------------------------------------
+
 # Load data & artifacts
-# --------------------------------------------------
 data = pd.read_csv("final_data.csv")
 
 X_test = joblib.load("X_test.pkl")
@@ -26,9 +25,7 @@ with open("model_metrics.json") as f:
     model_metrics = json.load(f)
 
 
-# --------------------------------------------------
 # App config
-# --------------------------------------------------
 st.set_page_config(page_title="STD Risk Assessment System", layout="centered")
 
 st.title("📊 STD Incidence Risk Assessment")
@@ -38,9 +35,7 @@ based on demographic, socioeconomic, education, and crime indicators.
 """)
 
 
-# --------------------------------------------------
 # Navigation panel
-# --------------------------------------------------
 st.sidebar.title("Navigation")
 
 page = st.sidebar.radio(
@@ -49,9 +44,7 @@ page = st.sidebar.radio(
 )
 
 
-# ==================================================
-# 📊 EDA DASHBOARD
-# ==================================================
+#EDA DASHBOARD
 if page == "📊 EDA Dashboard":
 
     st.header("Exploratory Data Analysis (EDA)")
@@ -104,14 +97,12 @@ if page == "📊 EDA Dashboard":
 
     st.pyplot(fig)
 
-# ==================================================
-# 🤖 RISK PREDICTION
-# ==================================================
+
+#  RISK PREDICTION
 if page == "🤖 Risk Prediction":
 
-    # -----------------------------
+  
     # Model selection
-    # -----------------------------
     st.header("Model Selection")
 
     model_display_to_key = {
@@ -129,9 +120,7 @@ if page == "🤖 Risk Prediction":
 
     model_choice = model_display_to_key[selected_display]
 
-    # -----------------------------
     # User inputs
-    # -----------------------------
     st.header("Input Population Indicators")
 
     state = st.selectbox(
@@ -150,9 +139,7 @@ if page == "🤖 Risk Prediction":
     income_mean = st.number_input("Mean Income (RM)", min_value=1500.0, step=100.0)
     income_median = st.number_input("Median Income (RM)", min_value=3000.0, step=100.0)
 
-    # -----------------------------
     # Build input dataframe
-    # -----------------------------
     input_data = pd.DataFrame([{
         "cases": cases,
         "incidence": incidence,
@@ -171,9 +158,7 @@ if page == "🤖 Risk Prediction":
 
     input_data = input_data[model_columns]
 
-    # -----------------------------
     # Prediction
-    # -----------------------------
     if st.button("Assess STD Risk"):
 
         if model_choice == "Logistic Regression":
@@ -193,9 +178,7 @@ if page == "🤖 Risk Prediction":
         probabilities = model.predict_proba(input_for_model)[0]
         confidence = probabilities[prediction]
 
-        # -----------------------------
         # Color-coded output
-        # -----------------------------
         st.subheader("Risk Assessment Result")
 
         if prediction == 0:
@@ -208,9 +191,7 @@ if page == "🤖 Risk Prediction":
         st.info(f"Model confidence: {confidence:.2%}")
         st.markdown(f"**Model Used:** `{model_choice}`")
 
-        # -----------------------------
         # Evaluation metrics
-        # -----------------------------
         st.subheader("Model Evaluation Metrics (Test Set)")
 
         metrics = model_metrics[model_choice]
@@ -223,9 +204,7 @@ if page == "🤖 Risk Prediction":
             st.metric("F1-score (Macro)", f"{metrics['F1-score']:.3f}")
             st.metric("ROC-AUC (OvR)", f"{metrics['ROC-AUC']:.3f}")
 
-    # -----------------------------
     # Model comparison: ROC–AUC
-    # -----------------------------
     st.header("Model Comparison: ROC–AUC Curves")
 
     fig, ax = plt.subplots()
@@ -258,6 +237,7 @@ if page == "🤖 Risk Prediction":
     ax.legend()
 
     st.pyplot(fig)
+
 
 
 
