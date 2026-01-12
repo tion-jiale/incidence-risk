@@ -64,7 +64,7 @@ if page == "📊 EDA Dashboard":
         [
             "Incidence by Year",
             "Cases vs Income",
-            "Incidence by State"
+            "Rape Cases Yearly"
         ]
     )
 
@@ -94,13 +94,13 @@ if page == "📊 EDA Dashboard":
         ax.set_ylabel("STD Cases")
         ax.set_title("STD Cases by Income Group")
 
-    elif eda_option == "Incidence by State":
-        state_incidence = data.groupby("state")["incidence"].mean()
+    elif eda_option == "Rape Cases Yearly":
+        yearly_rape = data.groupby("year")["rape"].mean()
 
-        state_incidence.plot(kind="bar", ax=ax)
-        ax.set_title("Average Incidence Rate by State")
-        ax.set_ylabel("Incidence Rate")
-        ax.set_xlabel("State")
+        ax.plot(yearly_rape.index.astype(str), yearly_rape.values)
+        ax.set_title("Rape Cases Over Time")
+        ax.set_xlabel("Year")
+        ax.set_ylabel("Average Rape Cases")
 
     st.pyplot(fig)
 
