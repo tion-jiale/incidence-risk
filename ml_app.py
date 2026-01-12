@@ -62,7 +62,7 @@ if page == "📊 EDA Dashboard":
     eda_option = st.selectbox(
         "Choose an EDA visualization",
         [
-            "Incidence Distribution",
+            "Incidence by Year",
             "Cases vs Income",
             "Incidence by State"
         ]
@@ -70,25 +70,39 @@ if page == "📊 EDA Dashboard":
 
     fig, ax = plt.subplots()
 
-    if eda_option == "Incidence Distribution":
-        ax.hist(data["incidence"], bins=20)
-        ax.set_title("Distribution of Incidence Rate")
-        ax.set_xlabel("Incidence")
-        ax.set_ylabel("Frequency")
+    if eda_option == "Incidence by Year":
+        yearly_incidence = data.groupby("year")["incidence"].mean()
+
+        ax.bar(yearly_incidence.index.astype(str), yearly_incidence.values)
+        ax.set_title("Average Incidence Rate by Year")
+        ax.set_xlabel("Year")
+        ax.set_ylabel("Average Incidence Rate")
 
     elif eda_option == "Cases vs Income":
-        ax.scatter(data["income_mean"], data["cases"])
-        ax.set_xlabel("Mean Income")
+        low_income_cases = data.loc[
+            data["income_mean"] < data["income_mean"].median(), "cases"
+        ]
+        high_income_cases = data.loc[
+            data["income_mean"] >= data["income_mean"].median(), "cases"
+        ]
+
+        ax.boxplot(
+            [low_income_cases, high_income_cases],
+            labels=["Low Income", "High Income"]
+        )
+        ax.set_xlabel("Income Level")
         ax.set_ylabel("STD Cases")
-        ax.set_title("STD Cases vs Mean Income")
+        ax.set_title("STD Cases by Income Group")
 
     elif eda_option == "Incidence by State":
-        data.groupby("state")["incidence"].mean().plot(kind="bar", ax=ax)
-        ax.set_title("Average Incidence by State")
+        state_incidence = data.groupby("state")["incidence"].mean()
+
+        state_incidence.plot(kind="bar", ax=ax)
+        ax.set_title("Average Incidence Rate by State")
         ax.set_ylabel("Incidence Rate")
+        ax.set_xlabel("State")
 
     st.pyplot(fig)
-
 
 # ==================================================
 # 🤖 RISK PREDICTION
